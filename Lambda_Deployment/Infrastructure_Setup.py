@@ -5,6 +5,7 @@ def lambda_handler(event, context):
     #Initialise AWS Resources
     ec2 = boto3.client('ec2')
     rds = boto3.client('rds')
+    s3 = boto3.client('s3')
 
     try: 
         # Create VPC
@@ -94,13 +95,39 @@ def lambda_handler(event, context):
             PubliclyAccessible=False,
             SubnetIds=[private_sub_id]
         )
+
         # Create S3 Bucket
+        bucket_name="Project Web Bucket"
+        s3.create_bucket(Bucket=bucket_name, CreateBucketConstraint={'LocationConstraint': 'us-east-1'})
+
+        # Bucket Policy 
+        bucket_policy = {
+            "Version": "2024-11-19",
+            "Statement": {
+                "Sid": "PublicReadGetObject",
+                "Effect": "Allow",
+                "Principal": "*",
+                "Action": "s3:GetObject",
+                "Resource": f"arn:aws:s3:::{bucket_name}/*"
+            }
+        }
+        s3.put_bucket_policy(Bucket=bucket_name, Policy=json.dumps(bucket_policy))
 
         # Setup CloudWatch Alarms
+        
 
+
+        # Response Json
+        response = {
+            "VPC ID": vpc_id,
+            "Subnet IDs (Public, Private, DB)": [public_sub_id, private_sub_id, db_sub_id],
+            "EC2 IDs (Web, App)": [web_server['InstanceId'], app_server['InstanceId']],
+            "RDS ID": primary_rds["DBInstance"],
+            "S3 Bucket Name": bucket_name 
+        }
         return {
             'statusCode': 200,
-            'body': json.dumps("Resources created successfully!")
+            'body': json.dumps(response)
         }
     except Exception as e:
         return {
