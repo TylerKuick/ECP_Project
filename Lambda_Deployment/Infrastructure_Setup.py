@@ -3,7 +3,8 @@ import boto3
 
 def lambda_handler(event, context):
     #Initialise AWS Resources
-    ec2 = boto3.client('ec2', "us-east-1a")
+    ec2 = boto3.client('ec2')
+    rds = boto3.client('rds')
 
     try: 
         # Create VPC
@@ -22,7 +23,7 @@ def lambda_handler(event, context):
 
         # Config Subnets
         public_sub = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.1.0/24", TagSpecifications=[{
-            'ResourceType':'vpc',
+            'ResourceType':'subnet',
             'Tags': [
                 {
                     "Key": "Name",
@@ -31,7 +32,7 @@ def lambda_handler(event, context):
             ]
         }])
         private_sub = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.2.0/24", TagSpecifications=[{
-            'ResourceType':'vpc',
+            'ResourceType':'subnet',
             'Tags': [
                 {
                     "Key": "Name",
@@ -40,7 +41,7 @@ def lambda_handler(event, context):
             ]
         }])
         db_sub = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.3.0/24", TagSpecifications=[{
-            'ResourceType':'vpc',
+            'ResourceType':'subnet',
             'Tags': [
                 {
                     "Key": "Name",
@@ -53,11 +54,46 @@ def lambda_handler(event, context):
         db_sub_id = db_sub["Subnet"]["SubnetId"]
 
         # Create and attach Internet Gateway
+        igw = ec2.create_internet_gateway(TagSpecifications=[{
+            'Key': "Name",
+            'Value': "Internet Gateway"
+        }])
+        igw_id = igw["InternetGateway"]["InternetGatewayId"]
+        ec2.attach_internet_gateway(VpcId=vpc_id, InternetGateway=igw_id)
 
         # Create EC2 Instances
+        ec2_res = boto3.resource("ec2")
+        web_server = ec2_res.create_instances(
+            ImageId='',
+            InstanceType="t2.micro",
+            MaxCount=1, # Edit during PROD
+            MinCount=1,
+            SubnetId=public_sub_id,
+            SecurityGroupIds = []   # Edit during PROD
+        )
+        app_server = ec2_res.create_instances(
+            ImageId='',
+            InstanceType="t2.micro",
+            MaxCount=1, # Edit during PROD
+            MinCount=1,
+            SubnetId=private_sub_id,
+            SecurityGroupIds = []    # Edit during PROD
+        )
 
         # Create Primary RDS Instance
-
+        primary_rds = rds.create_db_instances(
+            DBName="PrimaryDB",
+            DBInstanceIdentifier="primary-rds",
+            AllocatedStorage=2,
+            DBInstanceClass="db.t2.micro",
+            Engine="mysql",
+            MasterUsername="admin",
+            MasterPassword="password",
+            VPCSecurityGroupIds=[],  # Edit during PROD
+            MultiAZ=True,
+            PubliclyAccessible=False,
+            SubnetIds=[private_sub_id]
+        )
         # Create S3 Bucket
 
         # Setup CloudWatch Alarms
