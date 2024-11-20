@@ -6,21 +6,38 @@ def lambda_handler(event, context):
     rds = boto3.client('rds')
     ec2 = boto3.client('ec2')
     # Get VPC and Subnet IDs
+    db_sub_id = ec2.describe_subnets(Filters=[{
+        'Name': 'tag:Name',
+        'Values': ["Private Subnet 2 (Database)"]
+    }])['Subnets'][0]['SubnetId']
+
+    proj_sg = ec2.describe_security_groups(Filters=[{
+        'Name':'tag:Name',
+        'Values':["ProjectSG"]
+    }])['SecurityGroups'][0]['GroupId']
+
 
     try:
+        # Create DB Subnet Group 
+        rds.create_db_subnet_group(
+            DBSubnetGroupName = 'ProjectRDS',
+            DBSubnetGroupDescription='RDS Subnet Group',
+            SubnetIds=[db_sub_id]
+        )
+
         # Create Primary RDS Instance
-        primary_rds = rds.create_db_instances(
+        primary_rds = rds.create_db_instance(
             DBName="PrimaryDB",
             DBInstanceIdentifier="primary-rds",
             AllocatedStorage=20,
             DBInstanceClass="db.t3.micro",
             Engine="mysql",
             MasterUsername="admin",
-            MasterPassword="password",
-            VPCSecurityGroupIds=[],  # Edit during PROD
+            MasterUserPassword="password",
+            VpcSecurityGroupIds=[proj_sg],  
             MultiAZ=False,
             PubliclyAccessible=False,
-            SubnetIds=[db_sub_id]
+            DBSubnetGroupName=["ProjectRDS"]
         )
 
         # Add RDS Security Group to RDS Instance

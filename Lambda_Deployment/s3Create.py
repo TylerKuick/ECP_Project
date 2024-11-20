@@ -7,21 +7,21 @@ def lambda_handler(event, context):
     
     try:  
         # Create S3 Bucket
-        bucket_name="Project Web Bucket"
-        s3.create_bucket(Bucket=bucket_name, CreateBucketConstraint={'LocationConstraint': 'us-east-1'})
+        bucket_name="ecp-s3-bucket-tylertest"
+        s3.create_bucket(Bucket=bucket_name)
 
-        # Bucket Policy 
-        bucket_policy = {
-            "Version": "2024-11-19",
-            "Statement": {
-                "Sid": "PublicReadGetObject",
-                "Effect": "Allow",
-                "Principal": "*",
-                "Action": "s3:GetObject",
-                "Resource": f"arn:aws:s3:::{bucket_name}/*"
-            }
-        }
-        s3.put_bucket_policy(Bucket=bucket_name, Policy=json.dumps(bucket_policy))
+        # Bucket Policy (Blocked by restrictions, uncomment in prod)
+        # bucket_policy = {
+        #     "Version": "2012-10-17",
+        #     "Statement": {
+        #         "Sid": "PublicReadGetObject",
+        #         "Effect": "Allow",
+        #         "Principal": "*",
+        #         "Action": "s3:GetObject",
+        #         "Resource": f"arn:aws:s3:::{bucket_name}/*"
+        #     }
+        # }
+        # s3.put_bucket_policy(Bucket=bucket_name, Policy=json.dumps(bucket_policy))
 
         # Response Json
         response = {
