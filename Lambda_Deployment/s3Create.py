@@ -4,7 +4,7 @@ import boto3
 def lambda_handler(event, context):
     #Initialise AWS Resources
     s3 = boto3.client('s3')
-
+    
     try:  
         # Create S3 Bucket
         bucket_name="Project Web Bucket"

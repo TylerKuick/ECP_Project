@@ -4,7 +4,7 @@ import boto3
 def lambda_handler(event, context):
     #Initialise AWS Resources
     rds = boto3.client('rds')
-
+    ec2 = boto3.client('ec2')
     # Get VPC and Subnet IDs
 
     try:

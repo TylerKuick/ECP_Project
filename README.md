@@ -7,3 +7,5 @@ User Stories Covered:
 
 ## Adjustments made to User Stories: 
 - Invoke Lambda Function to provision cloud resources (VPC, EC2 Instances, RDS Instances, etc.)
+- Create Step Function to trigger Lambda Functions to create cloud infrastructure
+- Step Functions are executed via AWS CLI command "curl -X POST -d '{"input": "{}", "stateMachineArn":"arn:aws:states:us-east-1:767397761895:stateMachine:Infra-Setup"}' https://scnixsh1m5.execute-api.us-east-1.amazonaws.com/dev/infra-setup"

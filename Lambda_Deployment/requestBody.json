@@ -1,0 +1,4 @@
+{
+    "input": "{}",
+    "stateMachineArn": "arn:aws:states:us-east-1:767397761895:stateMachine:Infra-Setup"
+}
