@@ -78,8 +78,10 @@ def lambda_handler(event, context):
             print(e)
 
 
-        # Config Subnets
-        public_sub = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.1.0/24", TagSpecifications=[{
+        # Config Subnets in us-east-1a
+        public_sub = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.1.0/24",
+            AvailabilityZone="us-east-1a", 
+            TagSpecifications=[{
             'ResourceType':'subnet',
             'Tags': [
                 {
@@ -89,7 +91,9 @@ def lambda_handler(event, context):
             ]
         }])
 
-        private_sub = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.2.0/24", TagSpecifications=[{
+        private_sub = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.2.0/24", 
+            AvailabilityZone="us-east-1a", 
+            TagSpecifications=[{
             'ResourceType':'subnet',
             'Tags': [
                 {
@@ -97,9 +101,11 @@ def lambda_handler(event, context):
                     "Value": "Private Subnet 1"
                 }
             ]
-        }])
+        }]) 
 
-        db_sub = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.3.0/24", TagSpecifications=[{
+        db_sub = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.3.0/24", 
+            AvailabilityZone="us-east-1a", 
+            TagSpecifications=[{
             'ResourceType':'subnet',
             'Tags': [
                 {
@@ -108,13 +114,59 @@ def lambda_handler(event, context):
                 }
             ]
         }])
+
+
+        # Config Subnets in us-east-1b
+        public_sub2 = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.6.0/24", 
+            AvailabilityZone="us-east-1b", 
+            TagSpecifications=[{
+            'ResourceType':'subnet',
+            'Tags': [
+                {
+                    "Key": "Name",
+                    "Value": "Public Subnet 2"
+                }
+            ]
+        }])
+
+        private_sub2 = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.5.0/24", 
+            AvailabilityZone="us-east-1b", 
+            TagSpecifications=[{
+            'ResourceType':'subnet',
+            'Tags': [
+                {
+                    "Key": "Name",
+                    "Value": "Private Subnet 4"
+                }
+            ]
+        }])
+
+        db_sub2 = ec2.create_subnet(VpcId=vpc_id, CidrBlock="10.0.4.0/24", 
+        AvailabilityZone="us-east-1b",
+        TagSpecifications=[{
+            'ResourceType':'subnet',
+            'Tags': [
+                {
+                    "Key": "Name",
+                    "Value": "Private Subnet 3 (Database)"
+                }
+            ]
+        }])
+
+        # us-east-1a subnet IDs 
         public_sub_id = public_sub["Subnet"]["SubnetId"]
         private_sub_id = private_sub["Subnet"]["SubnetId"]
         db_sub_id = db_sub["Subnet"]["SubnetId"]
+
+        # us-east-1b subnet IDs
+        public_sub2_id = public_sub2["Subnet"]["SubnetId"]
+        private_sub2_id = private_sub2["Subnet"]["SubnetId"]
+        db_sub2_id = db_sub2["Subnet"]["SubnetId"]
         
         response = {
             "VPC ID": vpc_id,
-            "Subnet IDs (Public, Private, DB)": [public_sub_id, private_sub_id, db_sub_id]
+            "Subnet IDs (us-east-1a)": [public_sub_id, private_sub_id, db_sub_id],
+            "Subnet IDs (us-east-1b)": [public_sub2_id, private_sub2_id, db_sub2_id]
         }
         
         return {
