@@ -19,9 +19,9 @@ def lambda_handler(event, context):
         'Values': ["Public Subnet 1"]
     }])['Subnets'][0]['SubnetId']
     
-    private_sub_id = ec2.describe_subnets(Filters=[{
+    public_sub2_id = ec2.describe_subnets(Filters=[{
         'Name': 'tag:Name',
-        'Values': ["Private Subnet 1"]
+        'Values': ["Public Subnet 2"]
     }])['Subnets'][0]['SubnetId']
 
     try:
@@ -40,8 +40,34 @@ def lambda_handler(event, context):
 
 
         # Create NAT Gateway 
+        eip_addr = ec2.allocate_address(
+            Domain="vpc",
+            NetworkBorderGroup="us-east-1"
+        )['AllocationId']
+
+        eip_addr2 = ec2.allocate_address(
+            Domain="vpc",
+            NetworkBorderGroup="us-east-1"
+        )['AllocationId']
+
         ec2.create_nat_gateway(
+            AllocationId=eip_addr,
             SubnetId=public_sub_id,
+            TagSpecifications=[{
+                "ResourceType": "natgateway",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ProjectNAT"
+                    }
+                ]
+            }],
+            ConnectivityType="public"
+        )
+
+        ec2.create_nat_gateway(
+            AllocationId=eip_addr2,
+            SubnetId=public_sub2_id,
             TagSpecifications=[{
                 "ResourceType": "natgateway",
                 "Tags": [
@@ -56,7 +82,7 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
-            'body': json.dumps(f"Internet Gateway Created. {igw_id}")
+            'body': json.dumps(f"Internet Gateway and NAT Gateway Created. {igw_id}")
         }
     except Exception as e:
         return {
