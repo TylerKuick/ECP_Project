@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - ShopEasy</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="logo">Shop<span>Easy</span></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html" onclick="logout()">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="dashboard">
+      <h1>Welcome, Admin!</h1>
+      <p>Manage your store here:</p>
+      <ul>
+        <li><a href="#orders">View Orders</a></li>
+        <li><a href="#products">Manage Products</a></li>
+        <li><a href="#users">Manage Users</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 ShopEasy. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
+
+<script>  
+  function logout() {
+    alert("You have been logged out!");
+  }
+</script>
