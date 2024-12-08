@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - ShopEasy</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="logo">Shop<span>Easy</span></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="admin-login">
+      <h1>Admin Login</h1>
+      <form id="login-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Login</button>
+      </form>
+      <p id="error-message" style="color: red; display: none;">Invalid credentials. Please try again.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 ShopEasy. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    const validUsername = "admin";
+    const validPassword = "admin123";
+
+    document.getElementById("login-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      if (username === validUsername && password === validPassword) {
+        window.location.href = "admin-dashboard.html";
+      } else {
+        document.getElementById("error-message").style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>
